@@ -53,15 +53,13 @@ def draw_grid():
             # Actual positions of the visible grid square
             x = j * RESOLUTION
             y = i * RESOLUTION
-            if grid[i, j] == 1:
-                # Draw with colour
-                if coloured:
-                    colour = get_cell_colour(j, i)
-                    pygame.draw.rect(screen, colour, (x+1, y+1, RESOLUTION-2, RESOLUTION-2))
-                else:
-                    # Draw at x and y + 1 with Resolution - 2 in order to not hide the grid lines
-                    pygame.draw.rect(screen, (255, 255, 255) , (x+1, y+1, RESOLUTION-2, RESOLUTION-2))
 
+            # Set colour if coloured flag is True
+            colour = get_cell_colour(j, i) if coloured else (255, 255, 255)
+
+            if grid[i, j] == 1:
+                # Draw at x and y + 1 with Resolution - 2 in order to not hide the grid lines
+                pygame.draw.rect(screen, colour, (x+1, y+1, RESOLUTION-2, RESOLUTION-2))
             else:
                 pygame.draw.rect(screen, (0, 0, 0) , (x+1, y+1, RESOLUTION-2, RESOLUTION-2))
 
