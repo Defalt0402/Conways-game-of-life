@@ -24,6 +24,7 @@ screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Conway's Game of Life")
 clock = pygame.time.Clock()
 running = True
+coloured = False
 
 # Create visible grid of 1px border around cells
 screen.fill("black")
@@ -44,13 +45,18 @@ def initialise_grid():
 
 # Draw everything onto the grid
 def draw_grid():
-    global grid
+    global grid, coloured
     for i in range(CELLS_Y):
         for j in range(CELLS_X):
             x = j * RESOLUTION
             y = i * RESOLUTION
             if grid[i, j] == 1:
-                pygame.draw.rect(screen, (255, 255, 255) , (x+1, y+1, RESOLUTION-2, RESOLUTION-2))
+                if coloured:
+                    colour = get_cell_colour(j, i)
+                    pygame.draw.rect(screen, colour, (x+1, y+1, RESOLUTION-2, RESOLUTION-2))
+                else:
+                    pygame.draw.rect(screen, (255, 255, 255) , (x+1, y+1, RESOLUTION-2, RESOLUTION-2))
+
             else:
                 pygame.draw.rect(screen, (0, 0, 0) , (x+1, y+1, RESOLUTION-2, RESOLUTION-2))
 
@@ -60,6 +66,18 @@ def clear_grid():
     grid = np.zeros((CELLS_Y, CELLS_X))
 
     draw_grid()
+
+def get_cell_colour(x, y):
+    r = (x * 255) // CELLS_X
+    g = (y * 255) // CELLS_Y
+    b = 255 - r
+
+    return(r, g, b)
+
+def fill_grid():
+    global grid
+    grid.fill(1)
+
 
 # Draw the grid and information panel at the side
 initialise_grid()
@@ -73,8 +91,11 @@ screen.blit(title, titleRect)
 pauseText = fontSmall.render("To pause and unpause, press: Space", True, (255, 255, 255))
 clearText = fontSmall.render("To clear the grid, press: C", True, (255, 255, 255))
 randomText = fontSmall.render("To randomise the grid, press: R", True, (255, 255, 255))
+fillText = fontSmall.render("To fill the grid, press: F", True, (255, 255, 255))
+colourText = fontSmall.render("To colourise the grid, press: G", True, (255, 255, 255))
 drawText = fontSmall.render("To draw on the grid, left click on a cell", True, (255, 255, 255))
 eraseText = fontSmall.render("To erase from the grid, left click on a cell", True, (255, 255, 255))
+exitText = fontSmall.render("To close the game, press: Q", True, (255, 255, 255))
 
 pauseRect = pauseText.get_rect()
 pauseRect.center = (1200, 300)
@@ -88,19 +109,30 @@ randomRect = randomText.get_rect()
 randomRect.center = (1200, 400)
 screen.blit(randomText, randomRect)
 
+fillRect = fillText.get_rect()
+fillRect.center = (1200, 450)
+screen.blit(fillText, fillRect)
+
+colourRect = colourText.get_rect()
+colourRect.center = (1200, 500)
+screen.blit(colourText, colourRect)
+
 drawRect = drawText.get_rect()
-drawRect.center = (1200, 450)
+drawRect.center = (1200, 550)
 screen.blit(drawText, drawRect)
 
 eraseRect = eraseText.get_rect()
-eraseRect.center = (1200, 500)
+eraseRect.center = (1200, 600)
 screen.blit(eraseText, eraseRect)
 
+exitRect = exitText.get_rect()
+exitRect.center = (1200, 800)
+screen.blit(exitText, exitRect)
 
 pygame.display.flip()
 
 def game_loop(leftMouseHeld=None, rightMouseHeld=None):
-    global running, grid
+    global running, grid, coloured
 
     # Tell user game is running
     pygame.draw.rect(screen, (0, 0, 0) , (1010, 110, 1390, 150))
@@ -130,6 +162,10 @@ def game_loop(leftMouseHeld=None, rightMouseHeld=None):
                     clear_grid()
                 elif event.key == pygame.K_r:
                     initialise_grid()
+                elif event.key == pygame.K_f:
+                    fill_grid() 
+                elif event.key == pygame.K_g:
+                    coloured = not coloured
                 elif event.key == pygame.K_q:
                     running = False
                     pygame.quit()
@@ -217,6 +253,10 @@ def game_loop(leftMouseHeld=None, rightMouseHeld=None):
                     clear_grid()
                 elif event.key == pygame.K_r:
                     initialise_grid()
+                elif event.key == pygame.K_f:
+                    fill_grid()    
+                elif event.key == pygame.K_g:
+                    coloured = not coloured
                 elif event.key == pygame.K_q:
                     running = False
                     pygame.quit()
