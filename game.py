@@ -10,6 +10,7 @@ HEIGHT = 1000
 RESOLUTION = 10
 CELLS_X = GAMEWIDTH // RESOLUTION
 CELLS_Y = HEIGHT // RESOLUTION
+FPS = 30
 
 # Create grid to store game
 grid = np.zeros((CELLS_Y, CELLS_X))
@@ -17,9 +18,11 @@ grid = np.zeros((CELLS_Y, CELLS_X))
 # Perform initialisation for pygame
 pygame.init()
 pygame.font.init()
+# Define 3 font sizes
 fontLarge = pygame.font.SysFont(None, 50)
 fontMedium = pygame.font.SysFont(None, 40)
 fontSmall = pygame.font.SysFont(None, 29)
+# Set window attributes
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Conway's Game of Life")
 clock = pygame.time.Clock()
@@ -34,13 +37,12 @@ for i in range(CELLS_Y):
         x = j * RESOLUTION
         pygame.draw.rect(screen, (0, 0, 0), (x, y, RESOLUTION, RESOLUTION), 1)
 
+# Initialises the grid with random values
 def initialise_grid():
     global grid
-    # Initialise grid with random values
     for i in range(0, CELLS_Y):
         for j in range(0, CELLS_X):
-            val = random.randint(0, 1)
-            grid[i, j] = val
+            grid[i, j] = random.randint(0, 1)
     draw_grid()
 
 # Draw everything onto the grid
@@ -48,25 +50,31 @@ def draw_grid():
     global grid, coloured
     for i in range(CELLS_Y):
         for j in range(CELLS_X):
+            # Actual positions of the visible grid square
             x = j * RESOLUTION
             y = i * RESOLUTION
             if grid[i, j] == 1:
+                # Draw with colour
                 if coloured:
                     colour = get_cell_colour(j, i)
                     pygame.draw.rect(screen, colour, (x+1, y+1, RESOLUTION-2, RESOLUTION-2))
                 else:
+                    # Draw at x and y + 1 with Resolution - 2 in order to not hide the grid lines
                     pygame.draw.rect(screen, (255, 255, 255) , (x+1, y+1, RESOLUTION-2, RESOLUTION-2))
 
             else:
                 pygame.draw.rect(screen, (0, 0, 0) , (x+1, y+1, RESOLUTION-2, RESOLUTION-2))
 
+# Sets all cells to 0
 def clear_grid():
     global grid
 
-    grid = np.zeros((CELLS_Y, CELLS_X))
+    grid.fill(0)
 
     draw_grid()
 
+# Maps grid position to r, g, b values
+# Right = red, left = blue, bottom = green
 def get_cell_colour(x, y):
     r = (x * 255) // CELLS_X
     g = (y * 255) // CELLS_Y
@@ -74,6 +82,7 @@ def get_cell_colour(x, y):
 
     return(r, g, b)
 
+# Fills grid with all 1s
 def fill_grid():
     global grid
     grid.fill(1)
@@ -88,6 +97,7 @@ titleRect = title.get_rect()
 titleRect.center = (1200, 50)
 screen.blit(title, titleRect)
 
+# Text explaining controls
 pauseText = fontSmall.render("To pause and unpause, press: Space", True, (255, 255, 255))
 clearText = fontSmall.render("To clear the grid, press: C", True, (255, 255, 255))
 randomText = fontSmall.render("To randomise the grid, press: R", True, (255, 255, 255))
@@ -97,6 +107,8 @@ drawText = fontSmall.render("To draw on the grid, left click on a cell", True, (
 eraseText = fontSmall.render("To erase from the grid, left click on a cell", True, (255, 255, 255))
 exitText = fontSmall.render("To close the game, press: Q", True, (255, 255, 255))
 
+# Text requires a rect to be placed on screen
+# Each block gets the rect and sets its position for each piece of info text
 pauseRect = pauseText.get_rect()
 pauseRect.center = (1200, 300)
 screen.blit(pauseText, pauseRect)
@@ -131,6 +143,7 @@ screen.blit(exitText, exitRect)
 
 pygame.display.flip()
 
+# Main game loop
 def game_loop(leftMouseHeld=None, rightMouseHeld=None):
     global running, grid, coloured
 
@@ -141,6 +154,7 @@ def game_loop(leftMouseHeld=None, rightMouseHeld=None):
     runningTextRect.center = (1200, 150)
     screen.blit(runningText, runningTextRect)
 
+    # Check if user is holding the mouse down
     if leftMouseHeld == None:
         # Create Flags used for drawing
         leftMouseHeld = False
@@ -177,12 +191,14 @@ def game_loop(leftMouseHeld=None, rightMouseHeld=None):
                 elif event.button == 3:
                     rightMouseHeld = True
 
+            # Check for mouse button releases
             elif event.type == pygame.MOUSEBUTTONUP:
                 if event.button == 1:  # Left mouse button
                     leftMouseHeld = False
                 elif event.button == 3:
                     rightMouseHeld = False
         
+        # Pause game
         if running == False:
             break
 
@@ -205,16 +221,20 @@ def game_loop(leftMouseHeld=None, rightMouseHeld=None):
                     if neighbours == 3:
                         newGrid[i-1, j-1] = 1
 
+        # Update grid
         grid = newGrid
                 
+        # Draw on grid if mouse is being held
         if leftMouseHeld:
             mouseX, mouseY = pygame.mouse.get_pos()
             # If mouse is in bounds
             if mouseX >= 0 and mouseX <= GAMEWIDTH and mouseY >= 0 and mouseY <= HEIGHT:
+                # Translate mouse position to corresponding grid position
                 cellX = mouseX // RESOLUTION
                 cellY = mouseY // RESOLUTION
                 grid[cellY, cellX] = 1
 
+        # erase from grid if mouse is being held
         if rightMouseHeld:
             mouseX, mouseY = pygame.mouse.get_pos()
             # If mouse is in bounds
@@ -227,7 +247,7 @@ def game_loop(leftMouseHeld=None, rightMouseHeld=None):
 
         pygame.display.flip()
 
-        clock.tick(60)  # limits FPS to 60
+        clock.tick(FPS)  # limits FPS to 60
 
     # If Game is paused
     while not running:
@@ -299,6 +319,6 @@ def game_loop(leftMouseHeld=None, rightMouseHeld=None):
 
         pygame.display.flip()
 
-        clock.tick(60)  # limits FPS to 60
+        clock.tick(FPS)  # limits FPS to 60
 
 game_loop()
