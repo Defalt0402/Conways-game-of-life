@@ -1,4 +1,5 @@
 import numpy as np
+import random
 import pygame
 
 # Set display settings
@@ -18,12 +19,23 @@ pygame.display.set_caption("Conway's Game of Life")
 clock = pygame.time.Clock()
 running = True
 
+# Create visible grid of 1px border around cells
 screen.fill("black")
 for i in range(0, CELLS_Y):
     y = i * RESOLUTION
     for j in range(0, CELLS_X):
         x = j * RESOLUTION
         pygame.draw.rect(screen, (0, 0, 0), (x, y, RESOLUTION, RESOLUTION), 1)
+
+# Initialise grid with random values
+for i in range(0, CELLS_Y):
+    y = i * RESOLUTION
+    for j in range(0, CELLS_X):
+        x = j * RESOLUTION
+        val = random.randint(0, 1)
+        grid[i, j] = val
+        if val == 1:
+            pygame.draw.rect(screen, (255, 255, 255), (x+1, y+1, RESOLUTION-2, RESOLUTION-2))
 
 # Basic game loop
 while running:
