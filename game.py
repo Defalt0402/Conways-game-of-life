@@ -10,6 +10,7 @@ HEIGHT = 1000
 RESOLUTION = 10
 CELLS_X = GAMEWIDTH // RESOLUTION
 CELLS_Y = HEIGHT // RESOLUTION
+TEXT_CENTRE = GAMEWIDTH + ((WIDTH - GAMEWIDTH) // 2)
 FPS = 30
 
 # Create grid to store game
@@ -92,7 +93,7 @@ initialise_grid()
 pygame.draw.line(screen, (255, 255, 255), (1000, 0), (1000, 1000), 2)
 title = fontLarge.render("Conway's Game of Life", True, (255, 255, 255))
 titleRect = title.get_rect()
-titleRect.center = (1200, 50)
+titleRect.center = (TEXT_CENTRE, 50)
 screen.blit(title, titleRect)
 
 # Text explaining controls
@@ -108,35 +109,35 @@ exitText = fontSmall.render("To close the game, press: Q", True, (255, 255, 255)
 # Text requires a rect to be placed on screen
 # Each block gets the rect and sets its position for each piece of info text
 pauseRect = pauseText.get_rect()
-pauseRect.center = (1200, 300)
+pauseRect.center = (TEXT_CENTRE, 300)
 screen.blit(pauseText, pauseRect)
 
 clearRect = clearText.get_rect()
-clearRect.center = (1200, 350)
+clearRect.center = (TEXT_CENTRE, 350)
 screen.blit(clearText, clearRect)
 
 randomRect = randomText.get_rect()
-randomRect.center = (1200, 400)
+randomRect.center = (TEXT_CENTRE, 400)
 screen.blit(randomText, randomRect)
 
 fillRect = fillText.get_rect()
-fillRect.center = (1200, 450)
+fillRect.center = (TEXT_CENTRE, 450)
 screen.blit(fillText, fillRect)
 
 colourRect = colourText.get_rect()
-colourRect.center = (1200, 500)
+colourRect.center = (TEXT_CENTRE, 500)
 screen.blit(colourText, colourRect)
 
 drawRect = drawText.get_rect()
-drawRect.center = (1200, 550)
+drawRect.center = (TEXT_CENTRE, 550)
 screen.blit(drawText, drawRect)
 
 eraseRect = eraseText.get_rect()
-eraseRect.center = (1200, 600)
+eraseRect.center = (TEXT_CENTRE, 600)
 screen.blit(eraseText, eraseRect)
 
 exitRect = exitText.get_rect()
-exitRect.center = (1200, 800)
+exitRect.center = (TEXT_CENTRE, 800)
 screen.blit(exitText, exitRect)
 
 pygame.display.flip()
