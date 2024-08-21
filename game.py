@@ -1,6 +1,7 @@
 import numpy as np
 import random
 import pygame
+import math
 
 # Set display settings
 GAMEWIDTH = 1000
@@ -98,7 +99,7 @@ screen.blit(eraseText, eraseRect)
 
 pygame.display.flip()
 
-def game_loop():
+def game_loop(leftMouseHeld=None, rightMouseHeld=None):
     global running, grid
 
     # Tell user game is running
@@ -107,6 +108,11 @@ def game_loop():
     runningTextRect = runningText.get_rect()
     runningTextRect.center = (1200, 150)
     screen.blit(runningText, runningTextRect)
+
+    if leftMouseHeld == None:
+        # Create Flags used for drawing
+        leftMouseHeld = False
+        rightMouseHeld = False
 
     # Basic game loop
     while running:
@@ -131,9 +137,15 @@ def game_loop():
             # Check for mouse button presses
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:
-                    print("Left mouse button clicked")
+                    leftMouseHeld = True
                 elif event.button == 3:
-                    print("Right mouse button clicked")
+                    rightMouseHeld = True
+
+            elif event.type == pygame.MOUSEBUTTONUP:
+                if event.button == 1:  # Left mouse button
+                    leftMouseHeld = False
+                elif event.button == 3:
+                    rightMouseHeld = False
         
         if running == False:
             break
@@ -159,11 +171,27 @@ def game_loop():
 
         grid = newGrid
                 
+        if leftMouseHeld:
+            mouseX, mouseY = pygame.mouse.get_pos()
+            # If mouse is in bounds
+            if mouseX >= 0 and mouseX <= GAMEWIDTH and mouseY >= 0 and mouseY <= HEIGHT:
+                cellX = mouseX // RESOLUTION
+                cellY = mouseY // RESOLUTION
+                grid[cellY, cellX] = 1
+
+        if rightMouseHeld:
+            mouseX, mouseY = pygame.mouse.get_pos()
+            # If mouse is in bounds
+            if mouseX >= 0 and mouseX <= GAMEWIDTH and mouseY >= 0 and mouseY <= HEIGHT:
+                cellX = mouseX // RESOLUTION
+                cellY = mouseY // RESOLUTION
+                grid[cellY, cellX] = 0
+    
         draw_grid()
 
         pygame.display.flip()
 
-        clock.tick(30)  # limits FPS to 60
+        clock.tick(60)  # limits FPS to 60
 
     # If Game is paused
     while not running:
@@ -183,7 +211,7 @@ def game_loop():
             
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE:
-                    running = False
+                    running = True
                     break
                 elif event.key == pygame.K_c:
                     clear_grid()
@@ -196,17 +224,41 @@ def game_loop():
             # Check for mouse button presses
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:
-                    print("Left mouse button clicked")
+                    leftMouseHeld = True
                 elif event.button == 3:
-                    print("Right mouse button clicked")
+                    rightMouseHeld = True
+
+            elif event.type == pygame.MOUSEBUTTONUP:
+                if event.button == 1:  # Left mouse button
+                    leftMouseHeld = False
+                elif event.button == 3:
+                    rightMouseHeld = False
         
         if running == True:
-            game_loop()
+            game_loop(leftMouseHeld, rightMouseHeld)
+
+        if leftMouseHeld:
+            mouseX, mouseY = pygame.mouse.get_pos()
+            # If mouse is in bounds
+            if mouseX >= 0 and mouseX <= GAMEWIDTH and mouseY >= 0 and mouseY <= HEIGHT:
+                cellX = mouseX // RESOLUTION
+                cellY = mouseY // RESOLUTION
+                grid[cellY, cellX] = 1
+
+        if rightMouseHeld:
+            mouseX, mouseY = pygame.mouse.get_pos()
+            # If mouse is in bounds
+            if mouseX >= 0 and mouseX <= GAMEWIDTH and mouseY >= 0 and mouseY <= HEIGHT:
+                cellX = mouseX // RESOLUTION
+                cellY = mouseY // RESOLUTION
+                grid[cellY, cellX] = 0
+        
+        
 
         draw_grid()
 
         pygame.display.flip()
 
-        clock.tick(30)  # limits FPS to 60
+        clock.tick(60)  # limits FPS to 60
 
 game_loop()
